@@ -4,8 +4,12 @@ QueryBuilder.defaults({
         // @formatter:off
         equal:               function(v) { return v[0]; },
         not_equal:           function(v) { return { '!$eq': v[0] }; },
-        in:                  function(v) { return { '$in': v }; },
-        not_in:              function(v) { return { '!$in': v }; },
+        in:                  function(v) { return { '$in': v[0].split(",").map(function(item) {
+            return item.trim();
+        }) }; },
+        not_in:              function(v) { return { '!$in': v[0].split(",").map(function(item) {
+            return item.trim();
+        }) }; },
         less:                function(v) { return { '$lt': v[0] }; },
         less_or_equal:       function(v) { return { '$lte': v[0] }; },
         greater:             function(v) { return { '$gt': v[0] }; },
@@ -27,7 +31,7 @@ QueryBuilder.defaults({
 
     textMeRuleOperators: {
         '$eq': function(v) {
-            if (typeof v === 'object' && !(v instanceof Array) && !(v instanceof Date)) {
+            if (v && typeof v === 'object' && !(v instanceof Array) && !(v instanceof Date)) {
                 v = v['$eq'];
             }
             return {
@@ -63,10 +67,10 @@ QueryBuilder.defaults({
             return { 'val': v, 'op': 'not_contains' };
         },
         '$in': function(v) {
-            return { 'val': v.$in, 'op': 'in' };
+            return { 'val': v.$in.join(), 'op': 'in' };
         },
         '!$in': function(v) {
-            return { 'val': v['!$in'], 'op': 'not_in' };
+            return { 'val': v['!$in'].join(), 'op': 'not_in' };
         },
         '$lt': function(v) {
             return { 'val': v.$lt, 'op': 'less' };
