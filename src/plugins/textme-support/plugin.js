@@ -25,7 +25,9 @@ QueryBuilder.defaults({
         is_null:             function(v) { return null; },
         is_not_null:         function(v) { return { '!$eq': null }; },
         in_ratio:            function(v) { return { '$ratio': [v[0], v[1], v[2]] }; },
-        not_in_ratio:        function(v) { return { '!$ratio': [v[0], v[1], v[2]] }; }
+        not_in_ratio:        function(v) { return { '!$ratio': [v[0], v[1], v[2]] }; },
+        has_tier_and_depth:  function(v) { return { '$has_tier_and_depth': {'tier': v[0], 'depth': v[1]} } },
+        has_not_tier_and_depth: function(v) { return { '!$has_tier_and_depth': {'tier': v[0], 'depth': v[1] } } }
         // @formatter:on
     },
 
@@ -89,6 +91,12 @@ QueryBuilder.defaults({
         },
         '!$ratio': function(v) {
             return { 'val': [v['!$ratio'][0], v['!$ratio'][1], v['!$ratio'][1]], 'op': 'not_in_ratio' }
+        },
+        '$has_tier_and_depth': function(v) {
+            return { 'val': [v['$has_tier_and_depth']['tier'], v['$has_tier_and_depth']['depth']], 'op': 'has_tier_and_depth' }
+        },
+        '!$has_tier_and_depth': function(v) {
+            return { 'val': [v['!$has_tier_and_depth']['tier'], v['!$has_tier_and_depth']['depth']], 'op': 'has_not_tier_and_depth' }
         }
     }
 
