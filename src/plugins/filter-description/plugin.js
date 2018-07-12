@@ -49,7 +49,11 @@ QueryBuilder.define('filter-description', function(options) {
             }
             else {
                 if ($b.length === 0) {
-                    $b = $('<button type="button" class="btn btn-xs btn-info filter-description" data-toggle="popover"><i class="' + options.icon + '"></i></button>');
+                    if(typeof options.icon === 'object'){
+                        $b = $('<button type="button" class="btn btn-xs btn-info filter-description" data-toggle="popover"><i class="' + options.icon.class + '">' + options.icon.name + '</i></button>');
+                    }else {
+                        $b = $('<button type="button" class="btn btn-xs btn-info filter-description" data-toggle="popover"><i class="' + options.icon + '"></i></button>');
+                    }
                     $b.prependTo(rule.$el.find(QueryBuilder.selectors.rule_actions));
 
                     $b.popover({

@@ -2687,16 +2687,23 @@ QueryBuilder.templates.group = '\
   <div class="rules-group-header"> \
     <div class="btn-group pull-right group-actions"> \
       <button type="button" class="btn btn-xs btn-success" data-add="rule"> \
-        <i class="{{= it.icons.add_rule }}"></i> {{= it.translate("add_rule") }} \
+        {{? typeof it.icons.add_rule === "string"}}<i class="{{= it.icons.add_rule }}"></i> {{= it.translate("add_rule") }}{{?}} \
+        {{? typeof it.icons.add_rule === "object"}}<i class="{{= it.icons.add_rule.class }}">{{= it.icons.add_rule.name }}</i> \
+        {{? it.icons.add_rule.with_text}} <span>{{= it.translate("add_rule") }}</span>{{?}}\
+        {{?}} \
       </button> \
       {{? it.settings.allow_groups===-1 || it.settings.allow_groups>=it.level }} \
         <button type="button" class="btn btn-xs btn-success" data-add="group"> \
-          <i class="{{= it.icons.add_group }}"></i> {{= it.translate("add_group") }} \
+          {{? typeof it.icons.add_group === "string"}}<i class="{{= it.icons.add_group }}"></i> {{= it.translate("add_group") }}{{?}} \
+          {{? typeof it.icons.add_group === "object"}}<i class="{{= it.icons.add_group.class }}">{{= it.icons.add_group.name }}</i> \
+          {{? it.icons.add_group.with_text}} <span>{{= it.translate("add_group") }}</span>{{?}}\
+          {{?}} \
         </button> \
       {{?}} \
       {{? it.level>1 }} \
         <button type="button" class="btn btn-xs btn-danger" data-delete="group"> \
-          <i class="{{= it.icons.remove_group }}"></i> {{= it.translate("delete_group") }} \
+          {{? typeof it.icons.remove_group === "string"}}<i class="{{= it.icons.remove_group }}"></i> {{= it.translate("delete_group") }}{{?}} \
+          {{? typeof it.icons.remove_group === "object"}}<i class="{{= it.icons.remove_group.class }}">{{= it.icons.remove_group.name }}</i>  {{? it.icons.remove_group.with_text}} {{= it.translate("delete_group") }}{{?}}{{?}} \
         </button> \
       {{?}} \
     </div> \
@@ -2708,9 +2715,12 @@ QueryBuilder.templates.group = '\
       {{~}} \
     </div> \
     {{? it.settings.display_errors }} \
-      <div class="error-container"><i class="{{= it.icons.error }}"></i></div> \
+      <div class="error-container">\
+        {{? typeof it.icons.error === "string"}}<i class="{{= it.icons.error }}"></i>{{?}} \
+        {{? typeof it.icons.error === "object"}}<i class="{{= it.icons.error.class }}">{{= it.icons.error.name }}</i> {{?}} \
+      </div> \
     {{?}} \
-  </div> \
+    </div> \
   <div class=rules-group-body> \
     <div class=rules-list></div> \
   </div> \
@@ -2720,14 +2730,18 @@ QueryBuilder.templates.rule = '\
 <div id="{{= it.rule_id }}" class="rule-container"> \
   <div class="rule-header"> \
     <div class="btn-group pull-right rule-actions"> \
-      <button type="button" class="btn btn-xs btn-danger" data-delete="rule"> \
-        <i class="{{= it.icons.remove_rule }}"></i> {{= it.translate("delete_rule") }} \
+      <button type="button" class="btn btn-xs btn-danger btn-remove-rule" data-delete="rule"> \
+        {{? typeof it.icons.remove_rule === "string"}}<i class="{{= it.icons.remove_rule }}"></i> {{= it.translate("delete_rule") }}{{?}} \
+        {{? typeof it.icons.remove_rule === "object"}}<i class="{{= it.icons.remove_rule.class }}">{{= it.icons.remove_rule.name }}</i>  {{? it.icons.remove_rule.with_text}} {{= it.translate("delete_rule") }}{{?}}{{?}} \
       </button> \
     </div> \
   </div> \
-  {{? it.settings.display_errors }} \
-    <div class="error-container"><i class="{{= it.icons.error }}"></i></div> \
-  {{?}} \
+    {{? it.settings.display_errors }} \
+    <div class="error-container">\
+        {{? typeof it.icons.error === "string"}}<i class="{{= it.icons.error }}"></i>{{?}} \
+        {{? typeof it.icons.error === "object"}}<i class="{{= it.icons.error.class }}">{{= it.icons.error.name }}</i>{{?}} \
+    </div> \
+    {{?}}\
   <div class="rule-filter-container"></div> \
   <div class="rule-operator-container"></div> \
   <div class="rule-value-container"></div> \
@@ -4305,7 +4319,11 @@ QueryBuilder.define('filter-description', function(options) {
             }
             else {
                 if ($b.length === 0) {
-                    $b = $('<button type="button" class="btn btn-xs btn-info filter-description" data-toggle="popover"><i class="' + options.icon + '"></i></button>');
+                    if(typeof options.icon === 'object'){
+                        $b = $('<button type="button" class="btn btn-xs btn-info filter-description" data-toggle="popover"><i class="' + options.icon.class + '">' + options.icon.name + '</i></button>');
+                    }else {
+                        $b = $('<button type="button" class="btn btn-xs btn-info filter-description" data-toggle="popover"><i class="' + options.icon + '"></i></button>');
+                    }
                     $b.prependTo(rule.$el.find(QueryBuilder.selectors.rule_actions));
 
                     $b.popover({
@@ -5102,20 +5120,6 @@ QueryBuilder.extend(/** @lends module:plugins.NotGroup.prototype */ {
 
         this.trigger('rulesChanged');
     }
-});
-
-
-QueryBuilder.define('read-only', function(options) {
-
-    this.on('getRuleInput.filter', function(h, rule, name) {
-        console.log(h.value);
-        var $h = $(h.value);
-        console.log($h.attr('name'));
-        $h.prop('disabled', true);
-        h.value = $h.prop('outerHTML');
-        console.log(h.value);
-    });
-
 });
 
 
