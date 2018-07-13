@@ -2689,14 +2689,14 @@ QueryBuilder.templates.group = '\
       <button type="button" class="btn btn-xs btn-success" data-add="rule"> \
         {{? typeof it.icons.add_rule === "string"}}<i class="{{= it.icons.add_rule }}"></i> {{= it.translate("add_rule") }}{{?}} \
         {{? typeof it.icons.add_rule === "object"}}<i class="{{= it.icons.add_rule.class }}">{{= it.icons.add_rule.name }}</i> \
-        {{? it.icons.add_rule.with_text}} <span>{{= it.translate("add_rule") }}</span>{{?}}\
+        {{? it.icons.add_rule.with_text}}{{= it.translate("add_rule") }}{{?}}\
         {{?}} \
       </button> \
       {{? it.settings.allow_groups===-1 || it.settings.allow_groups>=it.level }} \
         <button type="button" class="btn btn-xs btn-success" data-add="group"> \
           {{? typeof it.icons.add_group === "string"}}<i class="{{= it.icons.add_group }}"></i> {{= it.translate("add_group") }}{{?}} \
           {{? typeof it.icons.add_group === "object"}}<i class="{{= it.icons.add_group.class }}">{{= it.icons.add_group.name }}</i> \
-          {{? it.icons.add_group.with_text}} <span>{{= it.translate("add_group") }}</span>{{?}}\
+          {{? it.icons.add_group.with_text}}{{= it.translate("add_group") }}{{?}}\
           {{?}} \
         </button> \
       {{?}} \
@@ -2821,7 +2821,6 @@ QueryBuilder.prototype.getGroupTemplate = function(group_id, level) {
         settings: this.settings,
         translate: this.translate.bind(this)
     });
-
     /**
      * Modifies the raw HTML of a group
      * @event changer:getGroupTemplate
@@ -4266,6 +4265,114 @@ QueryBuilder.define('chosen-selectpicker', function(options) {
         rule.$el.find(Selectors.rule_operator).chosen('destroy');
     });
 });
+
+
+/**
+ * @class ExplicitCondition
+ * @memberof module:plugins
+ * @description Provide another way to display the conditionnal operator in a group
+ * @throws ConfigError
+ */
+QueryBuilder.define('explicit-condition', function(options) {
+    var self = this;
+    var hoverOnDelete;
+    if (options) {
+        hoverOnDelete = options.hoverOnDelete;
+    }
+
+    function insertExplicitCondition(model) {
+        var $b = $('<button class="explicit-condition" name="' + model.parent.id + '_cond">' + self.translate(model.parent.condition) + '</button>');
+        model.$el.prepend($b);
+        $b.on('click', function(e) {
+            e.preventDefault();
+            model.parent.condition = self.settings.conditionOpposites[model.parent.condition];
+        });
+    }
+
+    function linkExplicitCondition(model, first) {
+        deleteExplicitCondition(model);
+        if (first) {
+            first = !first;
+            return first;
+        }
+        insertExplicitCondition(model);
+        return first;
+    }
+
+    function deleteExplicitCondition(model) {
+        model.$el.find('>' + QueryBuilder.selectors.explicit_condition).remove();
+    }
+
+    function updateExplicitCondition(model, condition) {
+        model.$el.find('>' + QueryBuilder.selectors.explicit_condition).html(self.translate(condition));
+    }
+
+    function isHoverBound($button) {
+        var events = jQuery._data($button[0], 'events');
+        if (events === undefined) return false;
+        if (events.mouseover.length === 1 && events.mouseout.length === 1) return true;
+        return false;
+    }
+
+    function addHoverOnDelete(model, settings) {
+        var $btn_danger = model.$el.find('>' + QueryBuilder.selectors.group_header + ' .btn-danger');
+        if (isHoverBound($btn_danger)) return;
+        var old_border, old_bg;
+        $btn_danger.hover(function() {
+            old_border = $(model.$el).css('border');
+            old_bg = $(model.$el).css('background');
+            $(model.$el).css('border', settings.border);
+            $(model.$el).css('background', settings.background);
+        }, function() {
+            $(model.$el).css('border', old_border);
+            $(model.$el).css('background', old_bg);
+        });
+    }
+
+    this.on('afterAddRule afterAddGroup', function(e, model) {
+        if (!model.parent) return;
+        var first = true;
+        model.parent.each(function(rule) {
+            first = linkExplicitCondition(rule, first);
+        }, function(group) {
+            first = linkExplicitCondition(group, first);
+            if (hoverOnDelete) {
+                addHoverOnDelete(group, hoverOnDelete);
+            }
+        });
+        $('.rules-list').addClass('rules-list-explicit-condition');
+    });
+
+    this.on('beforeDeleteRule beforeDeleteGroup', function(e, model) {
+        if (!model.parent) return;
+        var first = true;
+        model.parent.each(function(rule) {
+            if (model !== rule) {
+                first = linkExplicitCondition(rule, first);
+            }
+        }, function(group) {
+            if (model !== group) {
+                first = linkExplicitCondition(group, first);
+            }
+        });
+    });
+
+    this.on('afterUpdateGroupCondition', function(e, group) {
+        var condition = group.condition;
+        group.each(function(child_rule) {
+            updateExplicitCondition(child_rule, condition);
+        }, function(child_group) {
+            updateExplicitCondition(child_group, condition);
+        });
+    });
+
+    this.on('afterAddGroup', function(e, group) {
+        /* Get ride of old radio group-conditions buttons and instead we put the success buttons */
+        group.$el.find(QueryBuilder.selectors.condition_container).empty().append(group.$el.find('.btn-success'));
+    });
+});
+
+QueryBuilder.selectors.explicit_condition = '.explicit-condition';
 
 
 /**

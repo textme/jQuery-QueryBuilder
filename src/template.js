@@ -5,14 +5,14 @@ QueryBuilder.templates.group = '\
       <button type="button" class="btn btn-xs btn-success" data-add="rule"> \
         {{? typeof it.icons.add_rule === "string"}}<i class="{{= it.icons.add_rule }}"></i> {{= it.translate("add_rule") }}{{?}} \
         {{? typeof it.icons.add_rule === "object"}}<i class="{{= it.icons.add_rule.class }}">{{= it.icons.add_rule.name }}</i> \
-        {{? it.icons.add_rule.with_text}} <span>{{= it.translate("add_rule") }}</span>{{?}}\
+        {{? it.icons.add_rule.with_text}}{{= it.translate("add_rule") }}{{?}}\
         {{?}} \
       </button> \
       {{? it.settings.allow_groups===-1 || it.settings.allow_groups>=it.level }} \
         <button type="button" class="btn btn-xs btn-success" data-add="group"> \
           {{? typeof it.icons.add_group === "string"}}<i class="{{= it.icons.add_group }}"></i> {{= it.translate("add_group") }}{{?}} \
           {{? typeof it.icons.add_group === "object"}}<i class="{{= it.icons.add_group.class }}">{{= it.icons.add_group.name }}</i> \
-          {{? it.icons.add_group.with_text}} <span>{{= it.translate("add_group") }}</span>{{?}}\
+          {{? it.icons.add_group.with_text}}{{= it.translate("add_group") }}{{?}}\
           {{?}} \
         </button> \
       {{?}} \

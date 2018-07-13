@@ -39,6 +39,24 @@ Will result to
 <i class="fas fa-plus-circle"></i> Add rule
 ```
 
+### New plugin:
+
+#### Explicit condition:
+New display of condition group and now you can change the condition by clicking on it.
+You can also see the future deleted group when you mouse goes over the delete group button. (You have to set the hoverOnDelete propertie as shown)
+```javascript
+options = {
+    plugins: {
+      'explicit-condition': {
+        hoverOnDelete: {
+          border: '3px solid rgba(10, 10, 10, 0.5)',
+          background: 'rgba(51, 51, 51, 0.5)'
+        }
+      }
+    }
+}
+```
+
 
 
 

@@ -3,15 +3,15 @@
  * Copyright 2014-2018 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
  * Licensed under MIT (https://opensource.org/licenses/MIT)
  */
-$theme-name: default !default;
+$theme-name: design !default;
 
 // common
 $item-vertical-spacing: 4px !default;
 $item-border-radius: 5px !default;
 
 // groups
-$group-background-color: rgba(250, 240, 210, .5) !default;
-$group-border-color: #DCC896 !default;
+$group-background-color: rgba(205, 205, 205, .5) !default;
+$group-border-color: rgba(105, 105, 105, .5) !default;
 $group-border: 1px solid $group-border-color !default;
 $group-padding: 10px !default;
 
@@ -30,7 +30,7 @@ $error-background-color: #FDD !default;
 
 // ticks
 $ticks-width: 2px !default;
-$ticks-color: #CCC !default;
+$ticks-color: #bd0f68 !default;
 $ticks-position: 5px, 10px !default;
 
 
@@ -186,5 +186,4 @@ $ticks-position: 5px, 10px !default;
   }
 }
 
-// import
-// endimport
+@import 'default';

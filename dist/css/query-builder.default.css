@@ -137,6 +137,40 @@
   color: #F99 !important;
 }
 
+.query-builder .explicit-condition {
+  z-index: 1;
+  position: absolute;
+  left: -28px;
+  top: -12px;
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+
+.query-builder .explicit-condition:focus {
+  outline: none;
+}
+
+.query-builder .explicit-condition:hover {
+  color: #2e6da4;
+  background-color: #fff;
+  border-color: #337ab7;
+}
+
+.query-builder .rules-list-explicit-condition > *:first-child::before {
+  top: 20px;
+  border-width: 2px 0 0 2px;
+  border-radius: 4px 0 0 0;
+}
+
+.query-builder .rules-list-explicit-condition > *:only-child::before {
+  border-width: 0 0 0 0;
+}
+
 .query-builder p.filter-description {
   margin: 5px 0 0 0;
   background: #D9EDF7;
