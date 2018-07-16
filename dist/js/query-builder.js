@@ -3967,8 +3967,7 @@ QueryBuilder.define('add-super-group', function(options) {
         var $button = $('<button class="btn btn-xs btn-success add-super-group"  data-add="super-group">' +
             ico + (icon.with_text || icon.with_text === undefined ? ' Add super-group' : '') +
             '</button>');
-
-
+      
         group.$el.find('>' + QueryBuilder.selectors.group_header + ' .btn-success').last().after($button);
 
         $button.on('click', function() {
@@ -3986,6 +3985,7 @@ QueryBuilder.define('add-super-group', function(options) {
                 Utils.sortByKey(toMove, '0');
 
                 superGroup = self.addGroup(group, false);
+                superGroup.condition = group.condition;
                 superGroup.moveAtBegin(group);
                 self.addRule(group);
 
@@ -3995,6 +3995,7 @@ QueryBuilder.define('add-super-group', function(options) {
             } else {
                 /* For a common group */
                 superGroup = self.addGroup(group);
+                superGroup.condition = group.condition;
                 superGroup.move(group.parent, group.getPos());
                 group.moveAtBegin(superGroup);
             }
@@ -5335,6 +5336,8 @@ QueryBuilder.extend(/** @lends module:plugins.NotGroup.prototype */ {
  * @throws MissingLibraryError, ConfigError
  */
 QueryBuilder.define('sortable', function(options) {
+    var icon = options.icon;
+
     if (!('interact' in window)) {
         Utils.error('MissingLibrary', 'interact.js is required to use "sortable" plugin. Get it here: http://interactjs.io');
     }
@@ -5504,7 +5507,14 @@ QueryBuilder.define('sortable', function(options) {
 
         this.on('getRuleTemplate.filter', function(h) {
             var $h = $(h.value);
-            $h.find(QueryBuilder.selectors.rule_header).after('<div class="drag-handle"><i class="' + options.icon + '"></i></div>');
+
+            var ico;
+            if (typeof icon === 'string') {
+                ico = '<div class="drag-handle"><i class="' + options.icon + '"></i></div>';
+            } else {
+                ico = '<div class="drag-handle"><i class="' + options.icon.class + '">' + options.icon.name + '</i></div>';
+            }
+            $h.find(QueryBuilder.selectors.rule_header).after(ico);
             h.value = $h.prop('outerHTML');
         });
     }
