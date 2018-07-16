@@ -4,12 +4,16 @@ QueryBuilder.templates.group = '\
     <div class="btn-group pull-right group-actions"> \
       <button type="button" class="btn btn-xs btn-success" data-add="rule"> \
         {{? typeof it.icons.add_rule === "string"}}<i class="{{= it.icons.add_rule }}"></i> {{= it.translate("add_rule") }}{{?}} \
-        {{? typeof it.icons.add_rule === "object"}}<i class="{{= it.icons.add_rule.class }}">{{= it.icons.add_rule.name }}</i> {{? it.icons.add_rule.with_text}} {{= it.translate("add_rule") }}{{?}}{{?}} \
+        {{? typeof it.icons.add_rule === "object"}}<i class="{{= it.icons.add_rule.class }}">{{= it.icons.add_rule.name }}</i> \
+        {{? it.icons.add_rule.with_text}}{{= it.translate("add_rule") }}{{?}}\
+        {{?}} \
       </button> \
       {{? it.settings.allow_groups===-1 || it.settings.allow_groups>=it.level }} \
         <button type="button" class="btn btn-xs btn-success" data-add="group"> \
           {{? typeof it.icons.add_group === "string"}}<i class="{{= it.icons.add_group }}"></i> {{= it.translate("add_group") }}{{?}} \
-          {{? typeof it.icons.add_group === "object"}}<i class="{{= it.icons.add_group.class }}">{{= it.icons.add_group.name }}</i> {{? it.icons.add_group.with_text}} {{= it.translate("add_group") }}{{?}}{{?}} \
+          {{? typeof it.icons.add_group === "object"}}<i class="{{= it.icons.add_group.class }}">{{= it.icons.add_group.name }}</i> \
+          {{? it.icons.add_group.with_text}}{{= it.translate("add_group") }}{{?}}\
+          {{?}} \
         </button> \
       {{?}} \
       {{? it.level>1 }} \
@@ -42,18 +46,18 @@ QueryBuilder.templates.rule = '\
 <div id="{{= it.rule_id }}" class="rule-container"> \
   <div class="rule-header"> \
     <div class="btn-group pull-right rule-actions"> \
-      <button type="button" class="btn btn-xs btn-danger" data-delete="rule"> \
+      <button type="button" class="btn btn-xs btn-danger btn-remove-rule" data-delete="rule"> \
         {{? typeof it.icons.remove_rule === "string"}}<i class="{{= it.icons.remove_rule }}"></i> {{= it.translate("delete_rule") }}{{?}} \
         {{? typeof it.icons.remove_rule === "object"}}<i class="{{= it.icons.remove_rule.class }}">{{= it.icons.remove_rule.name }}</i>  {{? it.icons.remove_rule.with_text}} {{= it.translate("delete_rule") }}{{?}}{{?}} \
       </button> \
     </div> \
   </div> \
-{{? it.settings.display_errors }} \
+    {{? it.settings.display_errors }} \
     <div class="error-container">\
         {{? typeof it.icons.error === "string"}}<i class="{{= it.icons.error }}"></i>{{?}} \
-        {{? typeof it.icons.error === "object"}}<i class="{{= it.icons.error.class }}">{{= it.icons.error.name }}">{{?}} \
+        {{? typeof it.icons.error === "object"}}<i class="{{= it.icons.error.class }}">{{= it.icons.error.name }}</i>{{?}} \
     </div> \
-{{?}}\
+    {{?}}\
   <div class="rule-filter-container"></div> \
   <div class="rule-operator-container"></div> \
   <div class="rule-value-container"></div> \

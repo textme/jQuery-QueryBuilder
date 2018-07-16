@@ -1,0 +1,53 @@
+$condition-background-color: #337ab7;
+$condition-border-color: #2e6da4;
+$condition-text-color: #fff;
+
+$ticks-position: 5px, 10px !default;
+
+$width-rule-container: 98%;
+
+@if $theme-name == 'dark' {
+  $condition-background-color: rgba(0, 170, 255, .2);
+  $condition-text-color: #AAD1E4;
+  $condition-border-color: #346F7B;
+}
+
+$condition-border: 1px solid $condition-border-color;
+
+.query-builder {
+
+  .explicit-condition {
+    z-index: 1;
+    position: absolute;
+    left: -28px;
+    top: -12px;
+    padding: 1px 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+    color: $condition-text-color;
+    background-color: $condition-background-color;
+    border-color: $condition-border-color;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:hover {
+      color: $condition-border-color;
+      background-color: $condition-text-color;
+      border-color: $condition-background-color;
+    }
+
+  }
+  .rules-list-explicit-condition {
+    & > *:first-child::before {
+      top: 20px;
+      border-width: 2px 0 0 2px;
+      border-radius: 4px 0 0 0;
+    }
+    & > *:only-child::before {
+      border-width: 0 0 0 0;
+    }
+  }
+}

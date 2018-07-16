@@ -137,7 +137,8 @@ Utils.changeType = function(value, type) {
                 return value;
             }
             return value === true || value === 1 || value.toLowerCase() === 'true' || value === '1';
-        default: return value;
+        default:
+            return value;
         // @formatter:on
     }
 };
@@ -156,11 +157,16 @@ Utils.escapeString = function(value) {
         .replace(/[\0\n\r\b\\\'\"]/g, function(s) {
             switch (s) {
                 // @formatter:off
-                case '\0': return '\\0';
-                case '\n': return '\\n';
-                case '\r': return '\\r';
-                case '\b': return '\\b';
-                default:   return '\\' + s;
+                case '\0':
+                    return '\\0';
+                case '\n':
+                    return '\\n';
+                case '\r':
+                    return '\\r';
+                case '\b':
+                    return '\\b';
+                default:
+                    return '\\' + s;
                 // @formatter:off
             }
         })
@@ -189,7 +195,9 @@ Utils.escapeElementId = function(str) {
     // - escapes : . [ ] ,
     // - avoids escaping already escaped values
     return (str) ? str.replace(/(\\)?([:.\[\],])/g,
-            function( $0, $1, $2 ) { return $1 ? $0 : '\\' + $2; }) : str;
+        function($0, $1, $2) {
+            return $1 ? $0 : '\\' + $2;
+        }) : str;
 };
 
 /**
@@ -261,5 +269,17 @@ Utils.defineModelProperties = function(obj, fields) {
                 }
             }
         });
+    });
+};
+
+/**
+ * Sort by key an array
+ *      Update array given in parameter
+ * @param {Array} arr
+ * @param {string} key
+ */
+Utils.sortByKey = function(arr, key) {
+    arr.sort(function(a, b) {
+        return a[key] > b[key] ? 1 : a[key] < b[key] ? -1 : 0;
     });
 };

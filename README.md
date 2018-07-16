@@ -13,7 +13,56 @@ jQuery plugin offering an simple interface to create complex queries.
 
 
 ## Documentation
+### Official
 [querybuilder.js.org](https://querybuilder.js.org)
+
+### Added features :
+#### Icons:
+Now you can set an image in two ways:
+```javascript 
+add_group: {
+    class: 'material-icons', 
+    name:'add',
+    with_text: true
+}
+```
+Will result to
+```HTML
+<i class="material-icons">add</i> Add group
+``` 
+or
+```
+add_rule: 'fas fa-plus-circle'
+```
+Will result to
+```HTML
+<i class="fas fa-plus-circle"></i> Add rule
+```
+
+### New plugin:
+
+#### Explicit condition:
+New display of group condition and now you can change the condition by clicking on it.
+You can also see the future deleted group when you mouse goes over the delete group button. (You have to set the hoverOnDelete propertie as shown)
+```javascript
+options = {
+    plugins: {
+      'explicit-condition': {
+        hoverOnDelete: {
+          border: '3px solid rgba(10, 10, 10, 0.5)',
+          background: 'rgba(51, 51, 51, 0.5)'
+        }
+      }
+    }
+}
+```
+
+
+#### Add Super Group:
+You can now add a super group above the current group in order.
+Options : icon (string or object)
+
+
 
 
 
