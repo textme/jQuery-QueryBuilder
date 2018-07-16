@@ -146,14 +146,14 @@
 <script src="../src/plugins/bt-tooltip-errors/plugin.js"></script>
 <script src="../src/plugins/change-filters/plugin.js"></script>
 <script src="../src/plugins/chosen-selectpicker/plugin.js"></script>
-<script src="../src/plugins/filter-description/plugin.js"></script>
 <script src="../src/plugins/explicit-condition/plugin.js"></script>
+<script src="../src/plugins/filter-description/plugin.js"></script>
 <script src="../src/plugins/invert/plugin.js"></script>
 <script src="../src/plugins/mongodb-support/plugin.js"></script>
-<script src="../src/plugins/textme-support/plugin.js"></script>
 <script src="../src/plugins/not-group/plugin.js"></script>
 <script src="../src/plugins/sortable/plugin.js"></script>
 <script src="../src/plugins/sql-support/plugin.js"></script>
+<script src="../src/plugins/textme-support/plugin.js"></script>
 <script src="../src/plugins/unique-filter/plugin.js"></script>
 <script src="../dist/i18n/query-builder.en.js"></script>
 <!-- endinjector -->
@@ -846,7 +846,7 @@
     $('.page-header').remove();
     $('.well').remove();
     $('.parameters').remove();
-    // $('#qb-theme').replaceWith('<link rel="stylesheet" href="../dist/css/query-builder.design.css" id="qb-theme">');
+    $('#qb-theme').replaceWith('<link rel="stylesheet" href="../dist/css/query-builder.design.css" id="qb-theme">');
     $('#builder').queryBuilder('destroy');
     $('#builder').queryBuilder(options_textme);
     $('#builder').queryBuilder('setRulesFromTextMe', {
@@ -858,27 +858,27 @@
           }
         }
       },
-        { 'number:is_subscribed': false }
-        // {
-        //   '$or': [
-        //     { 'number:iso_country': { '!$in': ['US', 'CA', 'GB', 'DE', 'NL', 'BE', 'AT', 'AU', 'MU', 'BR', 'CL', 'CZ', 'ID', 'KR', 'MY', 'PL', 'PR', 'ZA', 'FR'] } },
-        //     {
-        //       '$and':
-        //         [
-        //           {
-        //             '$or':
-        //               [
-        //                 { 'user:signup_country': { '!$in': ['US', 'CA'] } },
-        //                 { 'user:current_country': { '!$in': ['US', 'CA'] } }]
-        //           },
-        //           {
-        //             '$or':
-        //               [
-        //                 { 'user:signup_country': { '!$eq': 'number:iso_country' } },
-        //                 { 'user:current_country': { '!$eq': 'number:iso_country' } }]
-        //           }]
-        //     }]
-        // }
+        { 'number:is_subscribed': false },
+        {
+          '$or': [
+            { 'number:iso_country': { '!$in': ['US', 'CA', 'GB', 'DE', 'NL', 'BE', 'AT', 'AU', 'MU', 'BR', 'CL', 'CZ', 'ID', 'KR', 'MY', 'PL', 'PR', 'ZA', 'FR'] } },
+            {
+              '$and':
+                [
+                  {
+                    '$or':
+                      [
+                        { 'user:signup_country': { '!$in': ['US', 'CA'] } },
+                        { 'user:current_country': { '!$in': ['US', 'CA'] } }]
+                  },
+                  {
+                    '$or':
+                      [
+                        { 'user:signup_country': { '!$eq': 'number:iso_country' } },
+                        { 'user:current_country': { '!$eq': 'number:iso_country' } }]
+                  }]
+            }]
+        }
       ]
     });
   });

@@ -9,6 +9,8 @@
  * @throws MissingLibraryError, ConfigError
  */
 QueryBuilder.define('sortable', function(options) {
+    var icon = options.icon;
+
     if (!('interact' in window)) {
         Utils.error('MissingLibrary', 'interact.js is required to use "sortable" plugin. Get it here: http://interactjs.io');
     }
@@ -163,14 +165,29 @@ QueryBuilder.define('sortable', function(options) {
         this.on('getGroupTemplate.filter', function(h, level) {
             if (level > 1) {
                 var $h = $(h.value);
-                $h.find(QueryBuilder.selectors.condition_container).after('<div class="drag-handle"><i class="' + options.icon + '"></i></div>');
+
+                var ico;
+                if (typeof icon === 'string') {
+                    ico = '<div class="drag-handle"><i class="' + options.icon + '"></i></div>';
+                } else {
+                    ico = '<div class="drag-handle"><i class="' + options.icon.class + '">' + options.icon.name + '</i></div>';
+                }
+
+                $h.find(QueryBuilder.selectors.condition_container).after(ico);
                 h.value = $h.prop('outerHTML');
             }
         });
 
         this.on('getRuleTemplate.filter', function(h) {
             var $h = $(h.value);
-            $h.find(QueryBuilder.selectors.rule_header).after('<div class="drag-handle"><i class="' + options.icon + '"></i></div>');
+
+            var ico;
+            if (typeof icon === 'string') {
+                ico = '<div class="drag-handle"><i class="' + options.icon + '"></i></div>';
+            } else {
+                ico = '<div class="drag-handle"><i class="' + options.icon.class + '">' + options.icon.name + '</i></div>';
+            }
+            $h.find(QueryBuilder.selectors.rule_header).after(ico);
             h.value = $h.prop('outerHTML');
         });
     }
