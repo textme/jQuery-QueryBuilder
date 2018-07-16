@@ -122,6 +122,10 @@
   display: none;
 }
 
+.add-super-group:focus {
+  outline: 0;
+}
+
 .query-builder.bt-checkbox-glyphicons .checkbox input[type='checkbox']:checked + label::after {
   font-family: 'Glyphicons Halflings';
   content: '\e013';

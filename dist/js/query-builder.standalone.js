@@ -3098,6 +3098,7 @@ QueryBuilder.prototype.getGroupTemplate = function(group_id, level) {
         settings: this.settings,
         translate: this.translate.bind(this)
     });
+
     /**
      * Modifies the raw HTML of a group
      * @event changer:getGroupTemplate
@@ -3438,7 +3439,8 @@ Utils.changeType = function(value, type) {
                 return value;
             }
             return value === true || value === 1 || value.toLowerCase() === 'true' || value === '1';
-        default: return value;
+        default:
+            return value;
         // @formatter:on
     }
 };
@@ -3457,11 +3459,16 @@ Utils.escapeString = function(value) {
         .replace(/[\0\n\r\b\\\'\"]/g, function(s) {
             switch (s) {
                 // @formatter:off
-                case '\0': return '\\0';
-                case '\n': return '\\n';
-                case '\r': return '\\r';
-                case '\b': return '\\b';
-                default:   return '\\' + s;
+                case '\0':
+                    return '\\0';
+                case '\n':
+                    return '\\n';
+                case '\r':
+                    return '\\r';
+                case '\b':
+                    return '\\b';
+                default:
+                    return '\\' + s;
                 // @formatter:off
             }
         })
@@ -3490,7 +3497,9 @@ Utils.escapeElementId = function(str) {
     // - escapes : . [ ] ,
     // - avoids escaping already escaped values
     return (str) ? str.replace(/(\\)?([:.\[\],])/g,
-            function( $0, $1, $2 ) { return $1 ? $0 : '\\' + $2; }) : str;
+        function($0, $1, $2) {
+            return $1 ? $0 : '\\' + $2;
+        }) : str;
 };
 
 /**
@@ -3562,6 +3571,18 @@ Utils.defineModelProperties = function(obj, fields) {
                 }
             }
         });
+    });
+};
+
+/**
+ * Sort by key an array
+ *      Update array given in parameter
+ * @param {Array} arr
+ * @param {string} key
+ */
+Utils.sortByKey = function(arr, key) {
+    arr.sort(function(a, b) {
+        return a[key] > b[key] ? 1 : a[key] < b[key] ? -1 : 0;
     });
 };
 
@@ -4197,6 +4218,72 @@ $.fn.queryBuilder.regional = QueryBuilder.regional;
 
 
 /**
+ * @class AddSuperGroup
+ * @memberof module:plugins
+ * @description Provide an action to embrace a group by a new super group
+ * @param {object} [options]
+ * @param {string} [options.icon='glyphicon glyphicon-indent-left']
+ * @param {object} [options.icon= define class and name of the icon to display]
+ * @param {string} [options.icon.class= class name]
+ * @param {string} [options.icon.name= name]
+ * @throws ConfigError
+ */
+QueryBuilder.define('add-super-group', function(options) {
+    var self = this;
+
+    var icon = options.icon;
+
+    this.on('afterAddGroup', function(e, group) {
+        var ico;
+        if (typeof icon === 'string') {
+            ico = '<i class="' + icon + '"></i>';
+        } else {
+            ico = '<i class="' + icon.class + '">' + icon.name + '</i>';
+        }
+
+        var $button = $('<button class="btn btn-xs btn-success add-super-group"  data-add="super-group">' +
+            ico + (icon.with_text || icon.with_text === undefined ? ' Add super-group' : '') +
+            '</button>');
+
+
+        group.$el.find('>' + QueryBuilder.selectors.group_header + ' .btn-success').last().after($button);
+
+        $button.on('click', function() {
+            var superGroup;
+            if (group.level === 1) {
+                /* For the root group */
+
+                /* We save the list and the order of each element already existing in the root group */
+                var toMove = [];
+                group.each(function(rule) {
+                    toMove.push([rule.getPos(), rule]);
+                }, function(g) {
+                    toMove.push([g.getPos(), g]);
+                });
+                Utils.sortByKey(toMove, '0');
+
+                superGroup = self.addGroup(group, false);
+                superGroup.moveAtBegin(group);
+                self.addRule(group);
+
+                toMove.forEach(function(el) {
+                    el[1].move(superGroup, el[0]);
+                });
+            } else {
+                /* For a common group */
+                superGroup = self.addGroup(group);
+                superGroup.move(group.parent, group.getPos());
+                group.moveAtBegin(superGroup);
+            }
+        });
+    });
+}, {
+    icon: 'glyphicon glyphicon-indent-left'
+});
+
+
+
+/**
  * @class BtCheckbox
  * @memberof module:plugins
  * @description Applies Awesome Bootstrap Checkbox for checkbox and radio inputs.
@@ -4547,7 +4634,11 @@ QueryBuilder.define('chosen-selectpicker', function(options) {
 /**
  * @class ExplicitCondition
  * @memberof module:plugins
- * @description Provide another way to display the conditionnal operator in a group
+ * @description Provide another way to display the conditionnal operator in a group and to hilight a group before delete
+ * @param {object} [options]
+ * @param {object} [options.hoverOnDelete]
+ * @param {string} [options.hoverOnDelete.background]
+ * @param {string} [options.hoverOnDelete.border]
  * @throws ConfigError
  */
 QueryBuilder.define('explicit-condition', function(options) {
@@ -4566,14 +4657,10 @@ QueryBuilder.define('explicit-condition', function(options) {
         });
     }
 
-    function linkExplicitCondition(model, first) {
+    function linkExplicitCondition(model) {
         deleteExplicitCondition(model);
-        if (first) {
-            first = !first;
-            return first;
-        }
+        if (model.getPos() === 0) return;
         insertExplicitCondition(model);
-        return first;
     }
 
     function deleteExplicitCondition(model) {
@@ -4587,14 +4674,14 @@ QueryBuilder.define('explicit-condition', function(options) {
     function isHoverBound($button) {
         var events = jQuery._data($button[0], 'events');
         if (events === undefined) return false;
-        if (events.mouseover.length === 1 && events.mouseout.length === 1) return true;
-        return false;
+        return events.mouseover.length === 1 && events.mouseout.length === 1;
+
     }
 
     function addHoverOnDelete(model, settings) {
-        var $btn_danger = model.$el.find('>' + QueryBuilder.selectors.group_header + ' .btn-danger');
-        if (isHoverBound($btn_danger)) return;
         var old_border, old_bg;
+        var $btn_danger = model.$el.find('>' + QueryBuilder.selectors.group_header + ' .btn-danger');
+        if ($btn_danger.length === 0 || isHoverBound($btn_danger)) return;
         $btn_danger.hover(function() {
             old_border = $(model.$el).css('border');
             old_bg = $(model.$el).css('background');
@@ -4606,30 +4693,37 @@ QueryBuilder.define('explicit-condition', function(options) {
         });
     }
 
-    this.on('afterAddRule afterAddGroup', function(e, model) {
+    function handleChangeInModel(model) {
         if (!model.parent) return;
-        var first = true;
+
         model.parent.each(function(rule) {
-            first = linkExplicitCondition(rule, first);
+            linkExplicitCondition(rule);
         }, function(group) {
-            first = linkExplicitCondition(group, first);
+            linkExplicitCondition(group);
             if (hoverOnDelete) {
                 addHoverOnDelete(group, hoverOnDelete);
             }
         });
         $('.rules-list').addClass('rules-list-explicit-condition');
+    }
+
+    this.model.on('move', function(e, model) {
+        handleChangeInModel(model);
+    });
+
+    this.on('afterAddRule afterAddGroup', function(e, model) {
+        handleChangeInModel(model);
     });
 
     this.on('beforeDeleteRule beforeDeleteGroup', function(e, model) {
         if (!model.parent) return;
-        var first = true;
         model.parent.each(function(rule) {
             if (model !== rule) {
-                first = linkExplicitCondition(rule, first);
+                linkExplicitCondition(rule);
             }
         }, function(group) {
             if (model !== group) {
-                first = linkExplicitCondition(group, first);
+                linkExplicitCondition(group);
             }
         });
     });
@@ -6415,32 +6509,80 @@ QueryBuilder.defaults({
 
     textMeOperators: {
         // @formatter:off
-        equal:               function(v) { return v[0]; },
-        not_equal:           function(v) { return { '!$eq': v[0] }; },
-        in:                  function(v) { return { '$in': v[0].split(",").map(function(item) {
-            return item.trim();
-        }) }; },
-        not_in:              function(v) { return { '!$in': v[0].split(",").map(function(item) {
-            return item.trim();
-        }) }; },
-        less:                function(v) { return { '$lt': v[0] }; },
-        less_or_equal:       function(v) { return { '$lte': v[0] }; },
-        greater:             function(v) { return { '$gt': v[0] }; },
-        greater_or_equal:    function(v) { return { '$gte': v[0] }; },
-        begins_with:         function(v) { return { '$regex': '^' + Utils.escapeRegExp(v[0]) }; },
-        not_begins_with:     function(v) { return { '!$regex': '^' + Utils.escapeRegExp(v[0]) }; },
-        contains:            function(v) { return { '$regex': Utils.escapeRegExp(v[0]) }; },
-        not_contains:        function(v) { return { '!$regex': Utils.escapeRegExp(v[0]) }; },
-        ends_with:           function(v) { return { '$regex': Utils.escapeRegExp(v[0]) + '$' }; },
-        not_ends_with:       function(v) { return { '!$regex': Utils.escapeRegExp(v[0]) + '$' }; },
-        is_empty:            function(v) { return ''; },
-        is_not_empty:        function(v) { return { '!$eq': '' }; },
-        is_null:             function(v) { return null; },
-        is_not_null:         function(v) { return { '!$eq': null }; },
-        in_ratio:            function(v) { return { '$ratio': [v[0], v[1], v[2]] }; },
-        not_in_ratio:        function(v) { return { '!$ratio': [v[0], v[1], v[2]] }; },
-        has_tier_and_depth:  function(v) { return { '$has_tier_and_depth': {'tier': v[0], 'depth': v[1]} } },
-        has_not_tier_and_depth: function(v) { return { '!$has_tier_and_depth': {'tier': v[0], 'depth': v[1] } } }
+        equal: function(v) {
+            return v[0];
+        },
+        not_equal: function(v) {
+            return { '!$eq': v[0] };
+        },
+        in: function(v) {
+            return {
+                '$in': v[0].split(',').map(function(item) {
+                    return item.trim();
+                })
+            };
+        },
+        not_in: function(v) {
+            return {
+                '!$in': v[0].split(',').map(function(item) {
+                    return item.trim();
+                })
+            };
+        },
+        less: function(v) {
+            return { '$lt': v[0] };
+        },
+        less_or_equal: function(v) {
+            return { '$lte': v[0] };
+        },
+        greater: function(v) {
+            return { '$gt': v[0] };
+        },
+        greater_or_equal: function(v) {
+            return { '$gte': v[0] };
+        },
+        begins_with: function(v) {
+            return { '$regex': '^' + Utils.escapeRegExp(v[0]) };
+        },
+        not_begins_with: function(v) {
+            return { '!$regex': '^' + Utils.escapeRegExp(v[0]) };
+        },
+        contains: function(v) {
+            return { '$regex': Utils.escapeRegExp(v[0]) };
+        },
+        not_contains: function(v) {
+            return { '!$regex': Utils.escapeRegExp(v[0]) };
+        },
+        ends_with: function(v) {
+            return { '$regex': Utils.escapeRegExp(v[0]) + '$' };
+        },
+        not_ends_with: function(v) {
+            return { '!$regex': Utils.escapeRegExp(v[0]) + '$' };
+        },
+        is_empty: function(v) {
+            return '';
+        },
+        is_not_empty: function(v) {
+            return { '!$eq': '' };
+        },
+        is_null: function(v) {
+            return null;
+        },
+        is_not_null: function(v) {
+            return { '!$eq': null };
+        },
+        in_ratio: function(v) {
+            return { '$ratio': [v[0], v[1], v[2]] };
+        },
+        not_in_ratio: function(v) {
+            return { '!$ratio': [v[0], v[1], v[2]] };
+        },
+        has_tier_and_depth: function(v) {
+            return { '$has_tier_and_depth': { 'tier': v[0], 'depth': v[1] } };
+        },
+        has_not_tier_and_depth: function(v) {
+            return { '!$has_tier_and_depth': { 'tier': v[0], 'depth': v[1] } };
+        }
         // @formatter:on
     },
 
@@ -6451,14 +6593,14 @@ QueryBuilder.defaults({
             }
             return {
                 'val': v,
-                'op': v === null ? 'is_null': (v === '' ? 'is_empty' : 'equal')
+                'op': v === null ? 'is_null' : (v === '' ? 'is_empty' : 'equal')
             };
         },
         '!$eq': function(v) {
             v = v['!$eq'];
             return {
                 'val': v,
-                'op': v === null ? 'is_not_null': (v === '' ? 'is_not_empty' : 'not_equal')
+                'op': v === null ? 'is_not_null' : (v === '' ? 'is_not_empty' : 'not_equal')
             };
         },
         '$regex': function(v) {
@@ -6466,7 +6608,8 @@ QueryBuilder.defaults({
 
             if (v.slice(-1) == '$') {
                 return { 'val': v.slice(0, -1), 'op': 'ends_with' };
-            } else if (v.slice(0, 1) == '^') {
+            }
+            else if (v.slice(0, 1) == '^') {
                 return { 'val': v.slice(1), 'op': 'begins_with' };
             }
             return { 'val': v, 'op': 'contains' };
@@ -6476,7 +6619,8 @@ QueryBuilder.defaults({
 
             if (v.slice(-1) == '$') {
                 return { 'val': v.slice(0, -1), 'op': 'not_ends_with' };
-            } else if (v.slice(0, 1) == '^') {
+            }
+            else if (v.slice(0, 1) == '^') {
                 return { 'val': v.slice(1), 'op': 'not_begins_with' };
             }
             return { 'val': v, 'op': 'not_contains' };
@@ -6500,16 +6644,22 @@ QueryBuilder.defaults({
             return { 'val': v.$gte, 'op': 'greater_or_equal' };
         },
         '$ratio': function(v) {
-            return { 'val': [v['$ratio'][0], v['$ratio'][1], v['$ratio'][1]], 'op': 'in_ratio' }
+            return { 'val': [v['$ratio'][0], v['$ratio'][1], v['$ratio'][1]], 'op': 'in_ratio' };
         },
         '!$ratio': function(v) {
-            return { 'val': [v['!$ratio'][0], v['!$ratio'][1], v['!$ratio'][1]], 'op': 'not_in_ratio' }
+            return { 'val': [v['!$ratio'][0], v['!$ratio'][1], v['!$ratio'][1]], 'op': 'not_in_ratio' };
         },
         '$has_tier_and_depth': function(v) {
-            return { 'val': [v['$has_tier_and_depth']['tier'], v['$has_tier_and_depth']['depth']], 'op': 'has_tier_and_depth' }
+            return {
+                'val': [v['$has_tier_and_depth']['tier'], v['$has_tier_and_depth']['depth']],
+                'op': 'has_tier_and_depth'
+            };
         },
         '!$has_tier_and_depth': function(v) {
-            return { 'val': [v['!$has_tier_and_depth']['tier'], v['!$has_tier_and_depth']['depth']], 'op': 'has_not_tier_and_depth' }
+            return {
+                'val': [v['!$has_tier_and_depth']['tier'], v['!$has_tier_and_depth']['depth']],
+                'op': 'has_not_tier_and_depth'
+            };
         }
     }
 
@@ -6544,7 +6694,8 @@ QueryBuilder.extend({
             group.rules.forEach(function(rule) {
                 if (rule.rules && rule.rules.length > 0) {
                     parts.push(parse(rule));
-                } else {
+                }
+                else {
                     var mdb = self.settings.textMeOperators[rule.operator];
                     var op = self.getOperatorByType(rule.operator);
 
@@ -6623,7 +6774,8 @@ QueryBuilder.extend({
                 var key = self.getTextMeCondition(data);
                 if (key) {
                     parts.push(parse(data, key));
-                } else {
+                }
+                else {
                     var field = Object.keys(data)[0];
                     var value = data[field];
 
@@ -6655,7 +6807,7 @@ QueryBuilder.extend({
             return self.change('textMeToGroup', {
                 condition: topKey.replace('$', '').toUpperCase(),
                 rules: parts
-            })
+            });
         }(query, key));
     },
 
@@ -6671,7 +6823,8 @@ QueryBuilder.extend({
         var id;
         if (matchingFilters.length === 1) {
             id = matchingFilters[0].id;
-        } else {
+        }
+        else {
             id = this.change('getTextMeDbFieldID', field, value);
         }
 
@@ -6694,7 +6847,8 @@ QueryBuilder.extend({
             if (knownKeys.length === 1) {
                 return knownKeys[0];
             }
-        } else {
+        }
+        else {
             return '$eq';
         }
     },

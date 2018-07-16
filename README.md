@@ -42,7 +42,7 @@ Will result to
 ### New plugin:
 
 #### Explicit condition:
-New display of condition group and now you can change the condition by clicking on it.
+New display of group condition and now you can change the condition by clicking on it.
 You can also see the future deleted group when you mouse goes over the delete group button. (You have to set the hoverOnDelete propertie as shown)
 ```javascript
 options = {
@@ -56,6 +56,11 @@ options = {
     }
 }
 ```
+
+
+#### Add Super Group:
+You can now add a super group above the current group in order.
+Options : icon (string or object)
 
 
 
