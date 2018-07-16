@@ -178,6 +178,7 @@ $ticks-position: 5px, 10px !default;
 }
 
 // import
+@import "plugins/_add-super-group";
 @import "plugins/_bt-checkbox";
 @import "plugins/_bt-tooltip-errors";
 @import "plugins/_explicit-condition";

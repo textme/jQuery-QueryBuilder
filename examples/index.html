@@ -140,6 +140,7 @@
 <script src="../src/utils.js"></script>
 <script src="../src/model.js"></script>
 <script src="../src/jquery.js"></script>
+<script src="../src/plugins/add-super-group/plugin.js"></script>
 <script src="../src/plugins/bt-checkbox/plugin.js"></script>
 <script src="../src/plugins/bt-selectpicker/plugin.js"></script>
 <script src="../src/plugins/bt-tooltip-errors/plugin.js"></script>
@@ -181,7 +182,15 @@
       'unique-filter': null,
       'bt-checkbox': { color: 'primary' },
       'invert': null,
-      'not-group': null
+      'not-group': null,
+
+      'explicit-condition': {
+        hoverOnDelete: {
+          border: '3px solid rgba(10, 10, 10, 0.5)',
+          background: 'rgba(51, 51, 51, 0.5)'
+        }
+      },
+      'add-super-group': null
     },
     // standard operators in custom optgroups
     operators: [
@@ -507,20 +516,27 @@
 
   var options_textme = {
     plugins: {
-      // 'explicit-condition': {
-      //   hoverOnDelete: {
-      //     border: '3px solid rgba(10, 10, 10, 0.5)',
-      //     background: 'rgba(51, 51, 51, 0.5)'
-      //   }
-      // },
-      // 'filter-description': {
-      //   mode: 'popover',
-      //   icon: {
-      //     class: 'material-icons',
-      //     name: 'info'
-      //   }
-      // },
-      // 'bt-tooltip-errors': null
+      'explicit-condition': {
+        hoverOnDelete: {
+          border: '3px solid rgba(10, 10, 10, 0.5)',
+          background: 'rgba(51, 51, 51, 0.5)'
+        }
+      },
+      sortable: null,
+      'filter-description': {
+        mode: 'popover',
+        icon: {
+          class: 'material-icons',
+          name: 'info'
+        }
+      },
+      'bt-tooltip-errors': null,
+      'add-super-group': {
+        icon: {
+          class: 'material-icons',
+          name: 'format_indent_increase'
+        }
+      }
     },
     display_errors: true,
     select_placeholder: 'Select a condition',
@@ -830,7 +846,7 @@
     $('.page-header').remove();
     $('.well').remove();
     $('.parameters').remove();
-    $('#qb-theme').replaceWith('<link rel="stylesheet" href="../dist/css/query-builder.design.css" id="qb-theme">');
+    // $('#qb-theme').replaceWith('<link rel="stylesheet" href="../dist/css/query-builder.design.css" id="qb-theme">');
     $('#builder').queryBuilder('destroy');
     $('#builder').queryBuilder(options_textme);
     $('#builder').queryBuilder('setRulesFromTextMe', {
@@ -842,54 +858,28 @@
           }
         }
       },
-        { 'number:is_subscribed': false },
-        {
-          '$or': [
-            { 'number:iso_country': { '!$in': ['US', 'CA', 'GB', 'DE', 'NL', 'BE', 'AT', 'AU', 'MU', 'BR', 'CL', 'CZ', 'ID', 'KR', 'MY', 'PL', 'PR', 'ZA', 'FR'] } },
-            {
-              '$and':
-                [
-                  { 'cohort:african_premium': false },
-                  {
-                    '$and':
-                      [
-                        {
-                          '$or':
-                            [
-                              { 'user:signup_country': { '!$in': ['US', 'CA'] } },
-                              { 'user:current_country': { '!$in': ['US', 'CA'] } }]
-                        },
-                        {
-                          '$or':
-                            [
-                              { 'user:signup_country': { '!$eq': 'number:iso_country' } },
-                              { 'user:current_country': { '!$eq': 'number:iso_country' } }]
-                        }]
-                  },
-                  {
-                    '$or':
-                      [
-                        { 'cohort:domestic_tier3': true },
-                        {
-                          '$and':
-                            [
-                              {
-                                '$or':
-                                  [
-                                    { 'user:signup_country': { '!$in': ['US', 'CA'] } },
-                                    { 'user:current_country': { '!$in': ['US', 'CA'] } }]
-                              },
-                              {
-                                '$or':
-                                  [
-                                    { 'user:signup_country': { '!$eq': 'number:iso_country' } },
-                                    { 'user:current_country': { '!$eq': 'number:iso_country' } }]
-                              }]
-                        }
-                      ]
-                  }]
-            }]
-        }]
+        { 'number:is_subscribed': false }
+        // {
+        //   '$or': [
+        //     { 'number:iso_country': { '!$in': ['US', 'CA', 'GB', 'DE', 'NL', 'BE', 'AT', 'AU', 'MU', 'BR', 'CL', 'CZ', 'ID', 'KR', 'MY', 'PL', 'PR', 'ZA', 'FR'] } },
+        //     {
+        //       '$and':
+        //         [
+        //           {
+        //             '$or':
+        //               [
+        //                 { 'user:signup_country': { '!$in': ['US', 'CA'] } },
+        //                 { 'user:current_country': { '!$in': ['US', 'CA'] } }]
+        //           },
+        //           {
+        //             '$or':
+        //               [
+        //                 { 'user:signup_country': { '!$eq': 'number:iso_country' } },
+        //                 { 'user:current_country': { '!$eq': 'number:iso_country' } }]
+        //           }]
+        //     }]
+        // }
+      ]
     });
   });
 
