@@ -3967,7 +3967,7 @@ QueryBuilder.define('add-super-group', function(options) {
         var $button = $('<button class="btn btn-xs btn-success add-super-group"  data-add="super-group">' +
             ico + (icon.with_text || icon.with_text === undefined ? ' Add super-group' : '') +
             '</button>');
-
+      
         group.$el.find('>' + QueryBuilder.selectors.group_header + ' .btn-success').last().after($button);
 
         $button.on('click', function() {

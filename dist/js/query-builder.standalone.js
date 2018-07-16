@@ -4262,6 +4262,7 @@ QueryBuilder.define('add-super-group', function(options) {
                 Utils.sortByKey(toMove, '0');
 
                 superGroup = self.addGroup(group, false);
+
                 superGroup.condition = group.condition;
                 superGroup.moveAtBegin(group);
                 self.addRule(group);
