@@ -2,32 +2,80 @@ QueryBuilder.defaults({
 
     textMeOperators: {
         // @formatter:off
-        equal:               function(v) { return v[0]; },
-        not_equal:           function(v) { return { '!$eq': v[0] }; },
-        in:                  function(v) { return { '$in': v[0].split(",").map(function(item) {
-            return item.trim();
-        }) }; },
-        not_in:              function(v) { return { '!$in': v[0].split(",").map(function(item) {
-            return item.trim();
-        }) }; },
-        less:                function(v) { return { '$lt': v[0] }; },
-        less_or_equal:       function(v) { return { '$lte': v[0] }; },
-        greater:             function(v) { return { '$gt': v[0] }; },
-        greater_or_equal:    function(v) { return { '$gte': v[0] }; },
-        begins_with:         function(v) { return { '$regex': '^' + Utils.escapeRegExp(v[0]) }; },
-        not_begins_with:     function(v) { return { '!$regex': '^' + Utils.escapeRegExp(v[0]) }; },
-        contains:            function(v) { return { '$regex': Utils.escapeRegExp(v[0]) }; },
-        not_contains:        function(v) { return { '!$regex': Utils.escapeRegExp(v[0]) }; },
-        ends_with:           function(v) { return { '$regex': Utils.escapeRegExp(v[0]) + '$' }; },
-        not_ends_with:       function(v) { return { '!$regex': Utils.escapeRegExp(v[0]) + '$' }; },
-        is_empty:            function(v) { return ''; },
-        is_not_empty:        function(v) { return { '!$eq': '' }; },
-        is_null:             function(v) { return null; },
-        is_not_null:         function(v) { return { '!$eq': null }; },
-        in_ratio:            function(v) { return { '$ratio': [v[0], v[1], v[2]] }; },
-        not_in_ratio:        function(v) { return { '!$ratio': [v[0], v[1], v[2]] }; },
-        has_tier_and_depth:  function(v) { return { '$has_tier_and_depth': {'tier': v[0], 'depth': v[1]} } },
-        has_not_tier_and_depth: function(v) { return { '!$has_tier_and_depth': {'tier': v[0], 'depth': v[1] } } }
+        equal: function(v) {
+            return v[0];
+        },
+        not_equal: function(v) {
+            return { '!$eq': v[0] };
+        },
+        in: function(v) {
+            return {
+                '$in': v[0].split(',').map(function(item) {
+                    return item.trim();
+                })
+            };
+        },
+        not_in: function(v) {
+            return {
+                '!$in': v[0].split(',').map(function(item) {
+                    return item.trim();
+                })
+            };
+        },
+        less: function(v) {
+            return { '$lt': v[0] };
+        },
+        less_or_equal: function(v) {
+            return { '$lte': v[0] };
+        },
+        greater: function(v) {
+            return { '$gt': v[0] };
+        },
+        greater_or_equal: function(v) {
+            return { '$gte': v[0] };
+        },
+        begins_with: function(v) {
+            return { '$regex': '^' + Utils.escapeRegExp(v[0]) };
+        },
+        not_begins_with: function(v) {
+            return { '!$regex': '^' + Utils.escapeRegExp(v[0]) };
+        },
+        contains: function(v) {
+            return { '$regex': Utils.escapeRegExp(v[0]) };
+        },
+        not_contains: function(v) {
+            return { '!$regex': Utils.escapeRegExp(v[0]) };
+        },
+        ends_with: function(v) {
+            return { '$regex': Utils.escapeRegExp(v[0]) + '$' };
+        },
+        not_ends_with: function(v) {
+            return { '!$regex': Utils.escapeRegExp(v[0]) + '$' };
+        },
+        is_empty: function(v) {
+            return '';
+        },
+        is_not_empty: function(v) {
+            return { '!$eq': '' };
+        },
+        is_null: function(v) {
+            return null;
+        },
+        is_not_null: function(v) {
+            return { '!$eq': null };
+        },
+        in_ratio: function(v) {
+            return { '$ratio': [v[0], v[1], v[2]] };
+        },
+        not_in_ratio: function(v) {
+            return { '!$ratio': [v[0], v[1], v[2]] };
+        },
+        has_tier_and_depth: function(v) {
+            return { '$has_tier_and_depth': { 'tier': v[0], 'depth': v[1] } };
+        },
+        has_not_tier_and_depth: function(v) {
+            return { '!$has_tier_and_depth': { 'tier': v[0], 'depth': v[1] } };
+        }
         // @formatter:on
     },
 
@@ -38,14 +86,14 @@ QueryBuilder.defaults({
             }
             return {
                 'val': v,
-                'op': v === null ? 'is_null': (v === '' ? 'is_empty' : 'equal')
+                'op': v === null ? 'is_null' : (v === '' ? 'is_empty' : 'equal')
             };
         },
         '!$eq': function(v) {
             v = v['!$eq'];
             return {
                 'val': v,
-                'op': v === null ? 'is_not_null': (v === '' ? 'is_not_empty' : 'not_equal')
+                'op': v === null ? 'is_not_null' : (v === '' ? 'is_not_empty' : 'not_equal')
             };
         },
         '$regex': function(v) {
@@ -53,7 +101,8 @@ QueryBuilder.defaults({
 
             if (v.slice(-1) == '$') {
                 return { 'val': v.slice(0, -1), 'op': 'ends_with' };
-            } else if (v.slice(0, 1) == '^') {
+            }
+            else if (v.slice(0, 1) == '^') {
                 return { 'val': v.slice(1), 'op': 'begins_with' };
             }
             return { 'val': v, 'op': 'contains' };
@@ -63,7 +112,8 @@ QueryBuilder.defaults({
 
             if (v.slice(-1) == '$') {
                 return { 'val': v.slice(0, -1), 'op': 'not_ends_with' };
-            } else if (v.slice(0, 1) == '^') {
+            }
+            else if (v.slice(0, 1) == '^') {
                 return { 'val': v.slice(1), 'op': 'not_begins_with' };
             }
             return { 'val': v, 'op': 'not_contains' };
@@ -87,16 +137,22 @@ QueryBuilder.defaults({
             return { 'val': v.$gte, 'op': 'greater_or_equal' };
         },
         '$ratio': function(v) {
-            return { 'val': [v['$ratio'][0], v['$ratio'][1], v['$ratio'][1]], 'op': 'in_ratio' }
+            return { 'val': [v['$ratio'][0], v['$ratio'][1], v['$ratio'][1]], 'op': 'in_ratio' };
         },
         '!$ratio': function(v) {
-            return { 'val': [v['!$ratio'][0], v['!$ratio'][1], v['!$ratio'][1]], 'op': 'not_in_ratio' }
+            return { 'val': [v['!$ratio'][0], v['!$ratio'][1], v['!$ratio'][1]], 'op': 'not_in_ratio' };
         },
         '$has_tier_and_depth': function(v) {
-            return { 'val': [v['$has_tier_and_depth']['tier'], v['$has_tier_and_depth']['depth']], 'op': 'has_tier_and_depth' }
+            return {
+                'val': [v['$has_tier_and_depth']['tier'], v['$has_tier_and_depth']['depth']],
+                'op': 'has_tier_and_depth'
+            };
         },
         '!$has_tier_and_depth': function(v) {
-            return { 'val': [v['!$has_tier_and_depth']['tier'], v['!$has_tier_and_depth']['depth']], 'op': 'has_not_tier_and_depth' }
+            return {
+                'val': [v['!$has_tier_and_depth']['tier'], v['!$has_tier_and_depth']['depth']],
+                'op': 'has_not_tier_and_depth'
+            };
         }
     }
 
@@ -131,7 +187,8 @@ QueryBuilder.extend({
             group.rules.forEach(function(rule) {
                 if (rule.rules && rule.rules.length > 0) {
                     parts.push(parse(rule));
-                } else {
+                }
+                else {
                     var mdb = self.settings.textMeOperators[rule.operator];
                     var op = self.getOperatorByType(rule.operator);
 
@@ -210,7 +267,8 @@ QueryBuilder.extend({
                 var key = self.getTextMeCondition(data);
                 if (key) {
                     parts.push(parse(data, key));
-                } else {
+                }
+                else {
                     var field = Object.keys(data)[0];
                     var value = data[field];
 
@@ -242,7 +300,7 @@ QueryBuilder.extend({
             return self.change('textMeToGroup', {
                 condition: topKey.replace('$', '').toUpperCase(),
                 rules: parts
-            })
+            });
         }(query, key));
     },
 
@@ -258,7 +316,8 @@ QueryBuilder.extend({
         var id;
         if (matchingFilters.length === 1) {
             id = matchingFilters[0].id;
-        } else {
+        }
+        else {
             id = this.change('getTextMeDbFieldID', field, value);
         }
 
@@ -281,7 +340,8 @@ QueryBuilder.extend({
             if (knownKeys.length === 1) {
                 return knownKeys[0];
             }
-        } else {
+        }
+        else {
             return '$eq';
         }
     },
